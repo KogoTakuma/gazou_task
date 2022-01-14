@@ -15,7 +15,7 @@ Node_1 = 5
 Node_2 = 10
 EPOCH = 10
 LR = 0.01
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 global outputE
 global X
 global Y
@@ -25,9 +25,8 @@ global w1,w2,b1,b2
 global result12
 
 def sigmoid(a):
-    e = math.e
     a = a
-    s = 1 / (1 + e**-a)
+    s = 1 / (1 + np.exp(-a))
     return s
 def numpy_frompyfunc(l, f):
     return np.frompyfunc(f, 1, 1)(l)
@@ -100,7 +99,7 @@ def get_minibatch(num):
   return result
 
 def caluculate_16(w,ey):
-  return np.dot(np.transpose(w),ey)
+  return np.transpose(np.dot(np.transpose(w),ey))
 
 def caluculate_17(ey,x):
   return np.dot(ey,np.transpose(x))
@@ -118,7 +117,7 @@ def caluculate_20(y,ey):
     onelineey = np.reshape(ey,[Node_1*BATCH_SIZE,1])
     ones =np.reshape((np.ones(Node_1*BATCH_SIZE)),[Node_1*BATCH_SIZE,1])
     result = [x * y for (x, y) in zip((ones - oneliney), [x * y for (x, y) in zip(onelineey, oneliney)])]
-    return np.reshape(result,[Node_1,BATCH_SIZE])
+    return np.transpose(np.reshape(result,[BATCH_SIZE,Node_1]))
 def renew_parameter2(EnW2,Enb2):
   global w1,w2,b1,b2
   w2 = w2 - LR*EnW2 #22
@@ -135,7 +134,6 @@ Y = mnist.download_and_parse_mnist_file("train-labels-idx1-ubyte.gz")
 for i in range(EPOCH):
     for num in range(int(NUMBER_OF_PICTURES/BATCH_SIZE)):  
         result = get_minibatch(num)
-        print(i,"エポック クロスエントロピー誤差 "+str(result))
         a=caluculate_16(w2,result12)
         b=caluculate_17(result12,np.reshape(middle_input,[Node_1,BATCH_SIZE]))
         c=caluculate_18(result12)
@@ -145,4 +143,6 @@ for i in range(EPOCH):
         e=caluculate_17(result20,minibatch_input_x)
         f=caluculate_18(result20)
         renew_parameter1(e,f)
+    
+        print(i,"エポック クロスエントロピー誤差 "+str(result))    
 print("end")    
