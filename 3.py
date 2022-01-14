@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pylab import cm
 import math
 
-NUMBER_OF_PICTURES = 10000
+NUMBER_OF_PICTURES = 60000
 CELL_OF_X = 28
 CELL_OF_Y = 28
 CELL_OF_AROW = CELL_OF_X * CELL_OF_Y
@@ -15,7 +15,7 @@ Node_1 = 5
 Node_2 = 10
 epoch = 1000
 LR = 0.01
-BATCH_SIZE = 100
+BATCH_SIZE = 50
 global outputE
 global X
 global Y
@@ -26,6 +26,7 @@ global result12
 
 def sigmoid(a):
     e = math.e
+    a = a
     s = 1 / (1 + e**-a)
     return s
 def numpy_frompyfunc(l, f):
@@ -35,10 +36,10 @@ def softmax(input_a):
   max_a = np.max(input_a)
   sum_exp_a = 0.0
   a = np.empty(0)
+  for num in range(Node_2): 
+    sum_exp_a = sum_exp_a + np.exp(input_a[num,0] - max_a)
   for num in range(Node_2):
-    sum_exp_a = sum_exp_a + np.exp(input_a[num] - max_a)
-  for num in range(Node_2):
-    a = np.append(a,np.exp(input_a[num]-max_a)/sum_exp_a)
+    a = np.append(a,np.exp(input_a[num,0]-max_a)/sum_exp_a)
   return a
 
 def randommaker(seed):
@@ -50,6 +51,7 @@ def randommaker(seed):
     b2 = np.reshape(b2,[Node_2,1])
     w1 = np.reshape((np.random.normal(0, 1/CELL_OF_AROW, Node_1*CELL_OF_AROW)),([Node_1,CELL_OF_AROW]))
     w2 = np.reshape((np.random.normal(0, 1/Node_1, Node_1*Node_2)),([Node_2,Node_1]))
+   
 
 def input_layer(x_1):
   global b1,w1,sigmoid_input_x
@@ -63,7 +65,6 @@ def middle_layer(y_1):
   global b2,w2
   a_k = np.empty(0)
   a_k = np.dot(w2,y_1) + b2
-  a_k = np.reshape(a_k,10)
   return a_k 
 
 def output_layer(a_k): 
@@ -82,11 +83,11 @@ def get_minibatch(num):
     minibatch_input_x = np.append(minibatch_input_x,x1)
     y1 = Y[x[num]]#答えの数
     b=input_layer(x1)#入力層
-    sigmoid_input = np.append(sigmoid_input,x)
-    sigmoided_y = numpy_frompyfunc(sigmoid_input,sigmoid)
-    result_sigmoided = np.reshape(sigmoided_y,[Node_1,1])
+    sigmoid_input = np.append(sigmoid_input,b)
+    sigmoided_output = numpy_frompyfunc(b,sigmoid)
+    result_sigmoided = sigmoided_output
     middle_input = np.append(middle_input,result_sigmoided)
-    c=middle_layer(b)#中間層
+    c=middle_layer(result_sigmoided)#中間層
     d=output_layer(c)#出力層
     e=-math.log(d[y1])#クロスエントロピー誤差を求める
     row12 = d - np.eye(10)[y1]
@@ -95,7 +96,7 @@ def get_minibatch(num):
   result = result/BATCH_SIZE 
   outputy = result 
   result12 = np.reshape(result12,(Node_2,BATCH_SIZE))/BATCH_SIZE 
-  minibatch_input_x = np.reshape(minibatch_input_x,[CELL_OF_AROW,BATCH_SIZE])
+  minibatch_input_x = np.transpose(np.reshape(minibatch_input_x,[BATCH_SIZE,CELL_OF_AROW]))
   print("クロスエントロピー誤差 "+str(result))
   return result
 
@@ -136,11 +137,11 @@ for num in range(epoch):
     get_minibatch(num)
     a=caluculate_16(w2,result12)
     b=caluculate_17(result12,np.reshape(middle_input,[Node_1,BATCH_SIZE]))
-    c=np.reshape(caluculate_18(result12),[Node_2,1])
+    c=caluculate_18(result12)
     result16=caluculate_16(w2,result12)
     renew_parameter2(b,c)
     result20 = caluculate_20(middle_input,result16)
     e=caluculate_17(result20,minibatch_input_x)
-    f=np.reshape(caluculate_18(result20),[Node_1,1])
+    f=caluculate_18(result20)
     renew_parameter1(e,f)
 print("end")    
