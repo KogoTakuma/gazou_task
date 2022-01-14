@@ -15,7 +15,7 @@ Node_1 = 5
 Node_2 = 10
 epoch = 1000
 LR = 0.01
-BATCH_SIZE = 50
+BATCH_SIZE = 200
 global outputE
 global X
 global Y
@@ -95,7 +95,7 @@ def get_minibatch(num):
     result12 = np.append(result12,row12)
   result = result/BATCH_SIZE 
   outputy = result 
-  result12 = np.reshape(result12,(Node_2,BATCH_SIZE))/BATCH_SIZE 
+  result12 = np.transpose(np.reshape(result12,(BATCH_SIZE,Node_2)))/BATCH_SIZE 
   minibatch_input_x = np.transpose(np.reshape(minibatch_input_x,[BATCH_SIZE,CELL_OF_AROW]))
   print("クロスエントロピー誤差 "+str(result))
   return result
