@@ -13,9 +13,9 @@ WEIGHT_M = 5
 WEIGHT_d = CELL_OF_AROW
 Node_1 = 5
 Node_2 = 10
-epoch = 1000
+EPOCH = 10
 LR = 0.01
-BATCH_SIZE = 200
+BATCH_SIZE = 100
 global outputE
 global X
 global Y
@@ -97,7 +97,6 @@ def get_minibatch(num):
   outputy = result 
   result12 = np.transpose(np.reshape(result12,(BATCH_SIZE,Node_2)))/BATCH_SIZE 
   minibatch_input_x = np.transpose(np.reshape(minibatch_input_x,[BATCH_SIZE,CELL_OF_AROW]))
-  print("クロスエントロピー誤差 "+str(result))
   return result
 
 def caluculate_16(w,ey):
@@ -133,15 +132,17 @@ def renew_parameter1(EnW1,Enb1,):
 randommaker(1)#初期の重みを乱数で生成
 X = mnist.download_and_parse_mnist_file("train-images-idx3-ubyte.gz")
 Y = mnist.download_and_parse_mnist_file("train-labels-idx1-ubyte.gz")
-for num in range(epoch):  
-    get_minibatch(num)
-    a=caluculate_16(w2,result12)
-    b=caluculate_17(result12,np.reshape(middle_input,[Node_1,BATCH_SIZE]))
-    c=caluculate_18(result12)
-    result16=caluculate_16(w2,result12)
-    renew_parameter2(b,c)
-    result20 = caluculate_20(middle_input,result16)
-    e=caluculate_17(result20,minibatch_input_x)
-    f=caluculate_18(result20)
-    renew_parameter1(e,f)
+for i in range(EPOCH):
+    for num in range(int(NUMBER_OF_PICTURES/BATCH_SIZE)):  
+        result = get_minibatch(num)
+        print(i,"エポック クロスエントロピー誤差 "+str(result))
+        a=caluculate_16(w2,result12)
+        b=caluculate_17(result12,np.reshape(middle_input,[Node_1,BATCH_SIZE]))
+        c=caluculate_18(result12)
+        result16=caluculate_16(w2,result12)
+        renew_parameter2(b,c)
+        result20 = caluculate_20(middle_input,result16)
+        e=caluculate_17(result20,minibatch_input_x)
+        f=caluculate_18(result20)
+        renew_parameter1(e,f)
 print("end")    
